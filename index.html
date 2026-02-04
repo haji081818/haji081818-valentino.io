@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: url('tulips.jpg') center/cover no-repeat, linear-gradient(135deg, #ffe0ec 0%, #8531F7 100%);
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            text-align: center;
+        }
+
+        h1 {
+            color: #6b46c2;
+            margin-bottom: 15px;
+            font-size: 28px;
+            text-shadow: 2px 2px 4px rgba(255, 20, 147, 0.2);
+        }
+
+        .game-info {
+            display: flex;
+        
+        .heart-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 76%;
+            color: white;
+            text-align: center;
+            font-weight: 700;
+            line-height: 1.35;
+            pointer-events: auto;
+            font-family: 'Dancing Script', cursive;
+            font-size: 18px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.18);
+        }
+
+        .heart-text .sub {
+            display: block;
+            font-size: 15px;
+            margin-top: 10px;
+            font-weight: 600;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .heart-text .cursive {
+            margin: 0 auto;
+            max-height: 56%;
+            overflow: auto;
+            padding: 6px 8px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+            justify-content: space-around;
+            margin-bottom: 15px;
+            gap: 30px;
+            color: #7e40b1;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        #gameCanvas {
+            border: 8px solid #9e74ff;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #fff5f9 0%, #ffe0ec 100%);
+            display: block;
+            width: min(80vw, 80vh);
+            height: min(80vw, 80vh);
+            max-width: 400px;
+            max-height: 400px;
+        }
+
+        .game-over-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(209, 130, 255, 0.98);
+            backdrop-filter: blur(5px);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 15px 40px rgba(158, 72, 255, 0.4);
+            animation: popIn 0.4s ease-out;
+        }
+
+        .game-over-screen.show {
+            display: block;
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.7);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .game-over-screen h2 {
+            color: #7e40b1;
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(255, 20, 147, 0.2);
+        }
+
+        .game-over-screen .message {
+            font-size: 28px;
+            color: #7e40b1;
+            margin-bottom: 30px;
+            font-weight: bold;
+            animation: heartbeat 1.4s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.1);
+            }
+            50% {
+                transform: scale(1);
+            }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive, sans-serif;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        #yesBtn {
+            background: linear-gradient(135deg, #ff69b4, #8c44ff);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 20, 147, 0.5);
+        }
+
+        #noBtn {
+            background: linear-gradient(135deg, #87ceeb, #eb87ad);
+            color: #ff1493;
+            box-shadow: 0 5px 15px rgba(135, 206, 235, 0.3);
+            position: relative;
+        }
+
+        #noBtn:hover {
+            background: linear-gradient(135deg, #87ceeb, #87ceeb);
+            box-shadow: 0 8px 20px rgba(135, 206, 235, 0.5);
+        }
+
+        .popup-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #6e41d6, #892fff);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            font-size: 28px;
+            text-align: center;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 20px 50px rgba(255, 20, 147, 0.5);
+            animation: popupAppear 0.5s ease-out;
+            max-width: 400px;
+        }
+
+        .popup-message.show {
+            display: block;
+        }
+
+        @keyframes popupAppear {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5) rotate(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+            }
+        }
+
+        .heart-float {
+            position: fixed;
+            font-size: 30px;
+            pointer-events: none;
+            animation: float-up 3s ease-in forwards;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) translateX(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-200px) translateX(50px) rotate(360deg);
+            }
+        }
+
+        .instructions {
+            color: #7e40b1;
+            font-size: 14px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 24px;
+            }
+            .game-info {
+                font-size: 16px;
+                gap: 20px;
+            }
+            .instructions {
+                font-size: 12px;
+            }
+            .game-over-screen h2 {
+                font-size: 28px;
+            }
+            .game-over-screen .message {
+                font-size: 24px;
+            }
+            .popup-message {
+                font-size: 24px;
+                padding: 30px;
+            }
+            .btn {
+                font-size: 16px;
+                padding: 10px 25px;
+            }
+            .heart-text {
+                font-size: 16px;
+            }
+            .heart-text .sub {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-info">
+            <div>Score: <span id="score">0</span></div>
+            <div>High Score: <span id="highScore">0</span></div>
+        </div>
+        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div class="instructions">Use Arrow Keys to move | Don't hit walls or yourself!</div>
+
+        <div class="game-over-screen" id="gameOverScreen">
+            <p class="cursive">My dearest Xy,
+                    <br><br>
+                    I just wanted to take a moment to tell you how much you truly mean to me. Being around you makes everything feel lighter, and every laugh and every quiet moment we share is something I deeply treasure.
+                    <br><br>
+                    Before this day goes any further, I want you to know how much it would mean to me to spend Valentine's Day with you. With that, I have one simple but very heartfelt question I’ve been wanting to ask you.</p>
+            <p class="message">Will you be my Valentine? 💕</p>
+            <p style="color: #7e40b1; font-size: 16px; margin-bottom: 20px;">Final Score: <span id="finalScore">0</span></p>
+            <div class="button-group">
+                <button class="btn" id="yesBtn">YES ✨</button>
+                <button class="btn" id="noBtn">NO 😢</button>
+            </div>
+        </div>
+
+        <div class="popup-message" id="popupMessage">
+            <div class="heart-container" aria-hidden="false">
+                <svg class="heart-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="g1" x1="0" x2="1">
+                            <stop offset="0%" stop-color="#b18cff" />
+                            <stop offset="100%" stop-color="#7e40b1" />
+                        </linearGradient>
+                    </defs>
+                    <path d="M32 58c-1 0-2-.4-2.8-1.1C10 41 2 33 2 24.5 2 17 8 11 15.5 11c4.5 0 8 2 10.5 5.2C28.5 13 32 11 36.5 11 44 11 50 17 50 24.5 50 33 42 41 34.8 56.9 34 57.6 33 58 32 58z" fill="url(#g1)" />
+                </svg>
+                <div class="heart-text">
+                    <p>💕 Yay! I’m looking forward to having you as my Valentine, po! 💕
+                        <br><br>
+                        <p>See you!</p>
+                    </p>
+                    <div style="margin-top:14px;">
+                        <button id="closePopupBtn" class="btn" style="padding:10px 18px; border-radius:20px; font-size:16px;">Play Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="snake.js"></script>
+</body>
+</html>
