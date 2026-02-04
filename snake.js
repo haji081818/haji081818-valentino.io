@@ -224,6 +224,69 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// Touch / Swipe Controls for mobile
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+const SWIPE_THRESHOLD = 20; // px
+
+window.addEventListener('touchstart', (e) => {
+    if (!e.touches || e.touches.length === 0) return;
+    const t = e.touches[0];
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+}, { passive: true });
+
+window.addEventListener('touchend', (e) => {
+    // touchend doesn't have touches; use changedTouches
+    const t = e.changedTouches ? e.changedTouches[0] : null;
+    if (!t) return;
+    touchEndX = t.clientX;
+    touchEndY = t.clientY;
+    handleSwipe();
+}, { passive: true });
+
+function handleSwipe() {
+    const dx = touchEndX - touchStartX;
+    const dy = touchEndY - touchStartY;
+    if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
+    if (Math.abs(dx) > Math.abs(dy)) {
+        // horizontal
+        if (dx > 0 && direction.x === 0) nextDirection = { x: 1, y: 0 };
+        else if (dx < 0 && direction.x === 0) nextDirection = { x: -1, y: 0 };
+    } else {
+        // vertical
+        if (dy > 0 && direction.y === 0) nextDirection = { x: 0, y: 1 };
+        else if (dy < 0 && direction.y === 0) nextDirection = { x: 0, y: -1 };
+    }
+}
+
+// On-screen control buttons
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest && e.target.closest('.ctrl');
+    if (!btn) return;
+    const dir = btn.getAttribute('data-dir');
+    applyDirection(dir);
+});
+
+// Support touchstart on buttons (immediate response)
+document.addEventListener('touchstart', (e) => {
+    const btn = e.target.closest && e.target.closest('.ctrl');
+    if (!btn) return;
+    e.preventDefault();
+    const dir = btn.getAttribute('data-dir');
+    applyDirection(dir);
+}, { passive: false });
+
+function applyDirection(dir) {
+    if (!gameRunning) return;
+    if (dir === 'up' && direction.y === 0) nextDirection = { x: 0, y: -1 };
+    if (dir === 'down' && direction.y === 0) nextDirection = { x: 0, y: 1 };
+    if (dir === 'left' && direction.x === 0) nextDirection = { x: -1, y: 0 };
+    if (dir === 'right' && direction.x === 0) nextDirection = { x: 1, y: 0 };
+}
+
 // Button Event Listeners
 let noBtnSize = 1;
 
